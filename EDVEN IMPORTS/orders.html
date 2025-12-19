@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+  <title>Orders - Admin Dashboard | Edven</title>
+  
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <!-- AOS Animation -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  
+  <!-- Material Design Styles -->
+  <link rel="stylesheet" href="css/material-styles.css" />
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="js/firebase.js"></script>
+</head>
+
+<body>
+  <div class="animated-bg"></div>
+  
+  <!-- NAVBAR -->
+  <nav class="material-navbar">
+    <div class="navbar-container">
+      <a href="dashboard.html" class="logo-container">
+        <div class="logo-icon">ED</div>
+        <span class="logo-text">Admin Dashboard</span>
+      </a>
+      <div class="nav-actions">
+        <a href="dashboard.html" class="material-btn material-btn-text">
+          <i class="fas fa-box"></i>
+          <span class="hide-mobile">Products</span>
+        </a>
+        <a href="orders.html" class="material-btn material-btn-primary">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="hide-mobile">Orders</span>
+        </a>
+        <button onclick="toggleTheme()" class="material-btn material-btn-icon">
+          <i class="fas fa-moon"></i>
+        </button>
+        <button onclick="logout()" class="material-btn material-btn-text" style="color: #f44336;">
+          <i class="fas fa-sign-out-alt"></i>
+          <span class="hide-mobile">Logout</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="material-hero" style="min-height: 50vh; padding: 100px 20px 60px;">
+    <div class="hero-content">
+      <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem;" data-aos="fade-right">
+        <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <i class="fas fa-shopping-cart" style="font-size: 36px; color: white;"></i>
+        </div>
+        <div>
+          <h1 class="hero-title" style="font-size: clamp(2rem, 4vw, 3.5rem); margin-bottom: 0.5rem;">Orders Management</h1>
+          <p class="hero-subtitle" style="font-size: 1.1rem;">View and manage customer orders</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ORDERS SECTION -->
+  <section class="material-section">
+    <!-- Filter Tabs -->
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-bottom: 2rem; overflow-x: auto;" data-aos="fade-up">
+      <button onclick="filterOrders('all')" class="filter-btn-material active" data-filter="all">All</button>
+      <button onclick="filterOrders('pending')" class="filter-btn-material" data-filter="pending">Pending</button>
+      <button onclick="filterOrders('processing')" class="filter-btn-material" data-filter="processing">Processing</button>
+      <button onclick="filterOrders('completed')" class="filter-btn-material" data-filter="completed">Completed</button>
+      <button onclick="filterOrders('cancelled')" class="filter-btn-material" data-filter="cancelled">Cancelled</button>
+    </div>
+
+    <div id="ordersContainer" style="display: flex; flex-direction: column; gap: 1.5rem;">
+      <div style="text-align: center; padding: 3rem;">
+        <div class="material-spinner"></div>
+        <p style="margin-top: 1rem; color: var(--text-secondary);">Loading orders...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ORDER DETAILS MODAL -->
+  <div id="orderModal" class="material-modal">
+    <div class="modal-content" style="max-width: 900px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Order Details</h3>
+        <button onclick="closeOrderModal()" class="modal-close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="orderDetails"></div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 0.75rem; padding: 1.5rem; border-top: 1px solid var(--bg-secondary);">
+        <button onclick="closeOrderModal()" class="material-btn material-btn-outlined">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="material-footer">
+    <p>© 2025 Edven Import Hub • Admin Dashboard</p>
+  </footer>
+
+  <script src="js/orders.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/theme.js"></script>
+  <script>
+    AOS.init({ 
+      once: true,
+      duration: 800,
+      easing: 'ease-out-cubic'
+    });
+    
+    if (window.innerWidth < 768) {
+      document.querySelectorAll('.hide-mobile').forEach(el => el.style.display = 'none');
+    }
+    
+    function closeOrderModal() {
+      const modal = document.getElementById('orderModal');
+      if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+      }
+    }
+    
+    window.closeOrderModal = closeOrderModal;
+    
+    // Close modal on backdrop click
+    document.addEventListener('click', (e) => {
+      const orderModal = document.getElementById('orderModal');
+      if (orderModal && e.target === orderModal) {
+        closeOrderModal();
+      }
+    });
+    
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeOrderModal();
+      }
+    });
+  </script>
+</body>
+</html>

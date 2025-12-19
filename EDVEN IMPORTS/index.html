@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+  <title>Edven Import Hub</title>
+
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- AOS Animation -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- Material Design Styles -->
+  <link rel="stylesheet" href="css/material-styles.css" />
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #7b2cbf;
+      --secondary: #9333ea;
+      --accent: #7b2cbf;
+      --text-primary: #212121;
+      --text-secondary: #757575;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f5f5f5;
+      --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    [data-theme="dark"] {
+      --text-primary: #ffffff;
+      --text-secondary: #b0b0b0;
+      --bg-primary: #121212;
+      --bg-secondary: #1e1e1e;
+      --shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background-color 0.3s, color 0.3s;
+      overflow-x: hidden;
+    }
+
+    /* Animated Background */
+    .animated-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .animated-bg::before,
+    .animated-bg::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.1;
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .animated-bg::before {
+      width: 500px;
+      height: 500px;
+      background: var(--primary);
+      top: -100px;
+      left: -100px;
+    }
+
+    .animated-bg::after {
+      width: 400px;
+      height: 400px;
+      background: var(--secondary);
+      bottom: -100px;
+      right: -100px;
+      animation-delay: -10s;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      33% {
+        transform: translate(30px, -30px) scale(1.1);
+      }
+
+      66% {
+        transform: translate(-20px, 20px) scale(0.9);
+      }
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      z-index: 1000;
+      padding: 1rem 2rem;
+      transition: all 0.3s;
+    }
+
+    [data-theme="dark"] .navbar {
+      background: rgba(18, 18, 18, 0.95);
+    }
+
+    .navbar-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .logo-text {
+      font-size: 20px;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-outline:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-primary);
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg-secondary);
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 20px 80px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+      opacity: 0.3;
+      animation: slide 20s linear infinite;
+    }
+
+    @keyframes slide {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      100% {
+        transform: translate(100px, 100px);
+      }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero p {
+      font-size: clamp(1.1rem, 2vw, 1.5rem);
+      margin-bottom: 2rem;
+      opacity: 0.95;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Products Section */
+    .products-section {
+      padding: 80px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: var(--text-secondary);
+      margin-bottom: 3rem;
+      font-size: 1.1rem;
+    }
+
+    .filter-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-bottom: 3rem;
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 2px solid var(--primary);
+      background: transparent;
+      color: var(--primary);
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .filter-btn.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .product-card {
+      background: var(--bg-primary);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: all 0.3s;
+      cursor: pointer;
+      border: 1px solid rgba(123, 44, 191, 0.1);
+    }
+
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+
+    .product-card:hover .product-image {
+      transform: scale(1.1);
+    }
+
+    .product-info {
+      padding: 1.5rem;
+    }
+
+    .product-category {
+      display: inline-block;
+      padding: 4px 12px;
+      background: var(--primary);
+      color: white;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 0.75rem;
+    }
+
+    .product-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .product-price {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-primary);
+      border-radius: 16px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      position: relative;
+      animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: var(--bg-secondary);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-primary);
+      z-index: 1;
+    }
+
+    .modal-close:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .modal-image {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 16px 16px 0 0;
+    }
+
+    .modal-body {
+      padding: 2rem;
+    }
+
+    /* Features Section */
+    .features-section {
+      padding: 80px 20px;
+      background: var(--bg-secondary);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: var(--bg-primary);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .feature-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      color: white;
+      font-size: 28px;
+    }
+
+    /* Footer */
+    .footer {
+      background: var(--bg-secondary);
+      padding: 3rem 20px;
+      text-align: center;
+      color: var(--text-secondary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 1rem;
+      }
+
+      .logo-text {
+        display: none;
+      }
+
+      .nav-links {
+        gap: 0.5rem;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        font-size: 12px;
+      }
+
+      .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+      }
+
+      .product-card-material,
+      .product-card {
+        border-radius: var(--border-radius);
+      }
+
+      .product-image-material,
+      .product-image {
+        height: 160px !important;
+      }
+
+      .product-info-material {
+        padding: 1rem !important;
+      }
+
+      .product-category-material {
+        font-size: 10px !important;
+        padding: 4px 10px !important;
+        margin-bottom: 0.5rem !important;
+      }
+
+      .product-name-material {
+        font-size: 1rem !important;
+        margin-bottom: 0.25rem !important;
+      }
+
+      .product-price-material {
+        font-size: 1.25rem !important;
+        margin-top: 0.25rem !important;
+      }
+    }
+  </style>
+</head>
+
+<body data-theme="light">
+  <div class="animated-bg"></div>
+
+  <!-- NAVBAR -->
+  <nav class="material-navbar">
+    <div class="navbar-container">
+      <a href="index.html" class="logo-container">
+        <div class="logo-icon">ED</div>
+        <span class="logo-text">Edven Import Hub</span>
+      </a>
+      <div class="nav-actions">
+        <a href="store.html" class="material-btn material-btn-text">
+          <i class="fas fa-store"></i>
+          <span class="hide-mobile">Store</span>
+        </a>
+        <a href="admin-login.html" class="material-btn material-btn-text">
+          <i class="fas fa-user-shield"></i>
+          <span class="hide-mobile">Admin</span>
+        </a>
+        <button onclick="toggleTheme()" class="material-btn material-btn-icon">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="material-hero" data-aos="fade-down">
+    <div class="hero-content">
+      <h1 class="hero-title" data-aos="fade-up" data-aos-delay="100">Trendy Imports for Modern Living</h1>
+      <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">Appliances • Gadgets • Fashion • Bags • Wigs</p>
+      <div class="hero-actions" data-aos="fade-up" data-aos-delay="300">
+        <a href="store.html" class="material-btn material-btn-primary">
+          <i class="fas fa-shopping-bag"></i> Shop Now
+        </a>
+        <a href="#features" class="material-btn"
+          style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white;">
+          Learn More
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS SECTION -->
+  <section id="products-section" class="material-section">
+    <h2 class="section-title-material" data-aos="fade-up">Our Products</h2>
+    <p class="section-subtitle-material" data-aos="fade-up" data-aos-delay="100">Curated collection of premium imports
+    </p>
+
+    <div class="filter-buttons-material" data-aos="fade-up" data-aos-delay="200">
+      <button onclick="filterByCategory('All', event)" class="filter-btn-material active">All</button>
+      <button onclick="filterByCategory('Home Appliances', event)" class="filter-btn-material">Home Appliances</button>
+      <button onclick="filterByCategory('Electrical Gadgets', event)" class="filter-btn-material">Gadgets</button>
+      <button onclick="filterByCategory('Bags', event)" class="filter-btn-material">Bags</button>
+      <button onclick="filterByCategory('Ladies Wear', event)" class="filter-btn-material">Ladies</button>
+      <button onclick="filterByCategory('Heels', event)" class="filter-btn-material">Heels</button>
+      <button onclick="filterByCategory('Easy Wear', event)" class="filter-btn-material">Easy Wear</button>
+      <button onclick="filterByCategory('Wigs', event)" class="filter-btn-material">Wigs</button>
+    </div>
+
+    <div id="products" class="products-grid"></div>
+  </section>
+
+  <!-- PRODUCT MODAL -->
+  <div id="modal" class="material-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Product Details</h3>
+        <button onclick="closeModal()" class="modal-close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <img id="modalImg" class="product-image-material" style="width: 100%; height: 300px; object-fit: cover;" />
+      <div class="modal-body">
+        <span id="modalCategory" class="product-category-material"></span>
+        <h3 id="modalTitle" class="product-name-material" style="margin: 1rem 0;"></h3>
+        <p id="modalPrice" class="product-price-material"></p>
+      </div>
+      <div class="modal-footer">
+        <a href="store.html" class="material-btn material-btn-primary">
+          <i class="fas fa-shopping-bag"></i> View in Store
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES SECTION -->
+  <section id="features" class="material-section" style="background: var(--bg-secondary);">
+    <h2 class="section-title-material" data-aos="fade-up">Why Choose Edven?</h2>
+    <div class="features-grid-material">
+      <div class="feature-card-material" data-aos="fade-up" data-aos-delay="0">
+        <div class="feature-icon-material">
+          <i class="fas fa-star"></i>
+        </div>
+        <h3 class="feature-title-material">Premium Quality</h3>
+        <p class="feature-text-material">Hand-picked imports meeting highest standards</p>
+      </div>
+      <div class="feature-card-material" data-aos="fade-up" data-aos-delay="100">
+        <div class="feature-icon-material">
+          <i class="fas fa-shipping-fast"></i>
+        </div>
+        <h3 class="feature-title-material">Fast Delivery</h3>
+        <p class="feature-text-material">Quick processing and reliable delivery nationwide</p>
+      </div>
+      <div class="feature-card-material" data-aos="fade-up" data-aos-delay="200">
+        <div class="feature-icon-material">
+          <i class="fas fa-tag"></i>
+        </div>
+        <h3 class="feature-title-material">Best Prices</h3>
+        <p class="feature-text-material">Competitive pricing with exclusive member benefits</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="material-footer">
+    <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">© 2025 Edven
+      Import Hub • All rights reserved</p>
+    <p style="font-size: 0.9rem;">Premium imports | Nationwide delivery | Best prices</p>
+  </footer>
+
+  <script src="js/firebase.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/theme.js"></script>
+  <script>
+    AOS.init({
+      once: true,
+      duration: 800,
+      easing: 'ease-out-cubic'
+    });
+
+    // Hide mobile text helper
+    if (window.innerWidth < 768) {
+      document.querySelectorAll('.hide-mobile').forEach(el => el.style.display = 'none');
+    }
+  </script>
+</body>
+
+</html>

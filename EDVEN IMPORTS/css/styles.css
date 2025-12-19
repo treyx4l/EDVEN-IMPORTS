@@ -1,0 +1,120 @@
+/* Input Styles */
+.input {
+  @apply w-full p-3 mb-3 rounded-lg bg-white dark:bg-black border border-gray-300 dark:border-primary/30 hover:border-primary/60 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all duration-300 dark:text-white dark:placeholder-gray-500;
+}
+
+/* Button Styles */
+.btn-primary {
+  @apply w-full bg-gradient-to-r from-primary to-purple-900 hover:from-primary/90 hover:to-purple-900/90 text-white py-3 rounded-lg font-bold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary/30;
+}
+
+/* Product Card Styles */
+.product-card {
+  @apply bg-base-100 rounded-xl overflow-hidden shadow-lg hover:shadow-primary/30 transition-all duration-300 transform hover:-translate-y-2 border border-base-300 cursor-pointer flex flex-col;
+}
+
+.product-card:hover {
+  @apply shadow-2xl shadow-primary/20;
+}
+
+.product-card img {
+  @apply w-full object-cover transition-transform duration-500;
+}
+
+.product-card:hover img {
+  @apply scale-110;
+}
+
+.product-card-content {
+  @apply p-4 sm:p-5 flex flex-col flex-grow;
+}
+
+.product-card h4,
+.product-card h5 {
+  @apply font-bold text-base-content mb-2 line-clamp-2 flex-grow;
+}
+
+.product-card-price {
+  @apply text-primary font-bold text-xl sm:text-2xl mt-auto;
+}
+
+/* Store Product Cards */
+.card {
+  @apply transition-all duration-300;
+}
+
+.card:hover {
+  @apply transform -translate-y-1;
+}
+
+.card figure img {
+  @apply transition-transform duration-500;
+}
+
+.card:hover figure img {
+  @apply scale-110;
+}
+
+/* Animation utilities */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Smooth transitions */
+* {
+  @apply transition-colors duration-300;
+}
+
+/* Gradient text */
+.gradient-text {
+  @apply bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent;
+}
+
+/* Shadow effects */
+.shadow-primary {
+  @apply shadow-lg shadow-primary/20;
+}
+
+/* Hover effects */
+.hover-lift {
+  @apply hover:shadow-xl hover:-translate-y-2 transition-all duration-300;
+}
+
+/* Responsive spacing */
+@media (max-width: 640px) {
+  .product-card {
+    @apply rounded-lg;
+  }
+  
+  .product-card img {
+    @apply h-48;
+  }
+  
+  .product-card-content {
+    @apply p-3;
+  }
+}

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+  <title>Store - Edven Import Hub</title>
+
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- AOS Animation -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- Material Design Styles -->
+  <link rel="stylesheet" href="css/material-styles.css" />
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    /* Cart Dropdown */
+    .cart-dropdown {
+      position: relative;
+    }
+
+    .cart-menu {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: 380px;
+      max-width: 90vw;
+      background: var(--surface);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-xl);
+      z-index: 1000;
+      display: none;
+      border: 1px solid var(--bg-secondary);
+    }
+
+    .cart-menu.active {
+      display: block;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .cart-content {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    @media (max-width: 768px) {
+      .cart-menu {
+        right: -20px;
+        width: 320px;
+      }
+    }
+
+    /* Pagination Styles */
+    .pagination-btn {
+      min-width: 40px;
+      height: 40px;
+      padding: 0 12px;
+      border: 2px solid var(--primary);
+      background: transparent;
+      color: var(--primary);
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pagination-btn:hover:not(:disabled) {
+      background: var(--primary);
+      color: white;
+    }
+
+    .pagination-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border-color: transparent;
+    }
+
+    .pagination-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="animated-bg"></div>
+
+  <!-- NAVBAR -->
+  <nav class="material-navbar">
+    <div class="navbar-container">
+      <a href="index.html" class="logo-container">
+        <div class="logo-icon">ED</div>
+        <span class="logo-text">Edven Import Hub</span>
+      </a>
+      <div class="nav-actions">
+        <a href="index.html" class="material-btn material-btn-text">
+          <i class="fas fa-home"></i>
+          <span class="hide-mobile">Home</span>
+        </a>
+        <div class="cart-dropdown">
+          <button onclick="toggleCart()" class="material-btn material-btn-icon" style="position: relative;">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cartBadge" class="cart-badge">0</span>
+          </button>
+          <div id="cartMenu" class="cart-menu">
+            <div style="padding: 1.5rem; border-bottom: 1px solid var(--bg-secondary);">
+              <h3
+                style="font-weight: 600; font-size: 1.1rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-shopping-bag"></i> Cart Items
+              </h3>
+            </div>
+            <div id="cartItems" class="cart-content"></div>
+            <div style="padding: 1rem; border-top: 1px solid var(--bg-secondary);">
+              <button onclick="openCheckout()" class="material-btn material-btn-primary"
+                style="width: 100%; padding: 12px;">
+                <i class="fas fa-check"></i> Checkout
+              </button>
+            </div>
+          </div>
+        </div>
+        <button onclick="toggleTheme()" class="material-btn material-btn-icon">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="material-hero" style="min-height: 60vh; padding: 100px 20px 60px;" data-aos="fade-down">
+    <div class="hero-content">
+      <h1 class="hero-title" style="font-size: clamp(2.5rem, 5vw, 4rem);">Our Store</h1>
+      <p class="hero-subtitle" style="font-size: clamp(1.1rem, 2vw, 1.4rem);">Browse our curated collection of premium
+        imports</p>
+    </div>
+  </section>
+
+  <!-- PRODUCTS SECTION -->
+  <section class="material-section">
+    <h2 class="section-title-material" data-aos="fade-up">Our Products</h2>
+    <p class="section-subtitle-material" data-aos="fade-up" data-aos-delay="100">Curated collection of premium imports
+    </p>
+
+    <!-- Search Bar -->
+    <div style="max-width: 600px; margin: 0 auto 2rem;" data-aos="fade-up" data-aos-delay="150">
+      <div style="position: relative;">
+        <i class="fas fa-search"
+          style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); z-index: 1;"></i>
+        <input type="text" id="searchInput" placeholder="Search products by name or description..."
+          class="material-input" style="padding-left: 48px;" oninput="handleSearch()" />
+        <button onclick="clearSearch()" id="clearSearchBtn"
+          style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--text-secondary); cursor: pointer; display: none; padding: 8px;"
+          onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filters and Sort -->
+    <div
+      style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center; margin-bottom: 2rem;"
+      data-aos="fade-up" data-aos-delay="200">
+      <div class="filter-buttons-material" style="flex: 1; min-width: 300px;">
+        <button onclick="filterByCategory('All', event)" class="filter-btn-material active">All</button>
+        <button onclick="filterByCategory('Home Appliances', event)" class="filter-btn-material">Home</button>
+        <button onclick="filterByCategory('Electrical Gadgets', event)" class="filter-btn-material">Gadgets</button>
+        <button onclick="filterByCategory('Bags', event)" class="filter-btn-material">Bags</button>
+        <button onclick="filterByCategory('Ladies Wear', event)" class="filter-btn-material">Ladies</button>
+        <button onclick="filterByCategory('Heels', event)" class="filter-btn-material">Heels</button>
+        <button onclick="filterByCategory('Easy Wear', event)" class="filter-btn-material">Easy Wear</button>
+        <button onclick="filterByCategory('Wigs', event)" class="filter-btn-material">Wigs</button>
+      </div>
+
+      <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+        <div style="position: relative;">
+          <label class="material-label" style="margin-bottom: 0.5rem; font-size: 0.875rem;">Sort By</label>
+          <select id="sortSelect" class="material-select" style="min-width: 180px;" onchange="applyFilters()">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="name-asc">Name: A to Z</option>
+            <option value="name-desc">Name: Z to A</option>
+          </select>
+        </div>
+        <div style="position: relative;">
+          <label class="material-label" style="margin-bottom: 0.5rem; font-size: 0.875rem;">Price Range</label>
+          <select id="priceFilter" class="material-select" style="min-width: 150px;" onchange="applyFilters()">
+            <option value="all">All Prices</option>
+            <option value="0-100">₵0 - ₵100</option>
+            <option value="100-500">₵100 - ₵500</option>
+            <option value="500-1000">₵500 - ₵1,000</option>
+            <option value="1000+">₵1,000+</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Count -->
+    <div style="margin-bottom: 1.5rem; color: var(--text-secondary); font-size: 0.875rem;" id="productsCount"
+      data-aos="fade-up" data-aos-delay="250">
+      Showing <span id="showingCount">0</span> of <span id="totalCount">0</span> products
+    </div>
+
+    <div id="products" class="products-grid"></div>
+
+    <!-- Pagination -->
+    <div id="pagination"
+      style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin-top: 3rem; flex-wrap: wrap;">
+    </div>
+  </section>
+
+  <!-- PRODUCT MODAL -->
+  <div id="productModal" class="material-modal">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Product Details</h3>
+        <button onclick="closeProductModal()" class="modal-close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <img id="modalImg" class="product-image-material"
+        style="width: 100%; height: 300px; object-fit: cover; border-radius: 0;" />
+      <div class="modal-body">
+        <span id="modalCategory" class="product-category-material"></span>
+        <h3 id="modalTitle" class="product-name-material" style="margin: 1rem 0;"></h3>
+        <p id="modalPrice" class="product-price-material"></p>
+        <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--bg-secondary);">
+          <h4 style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--text-primary);">
+            Description</h4>
+          <p id="modalDescription" style="color: var(--text-secondary); line-height: 1.6;"></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="addToCartFromModal()" class="material-btn material-btn-primary">
+          <i class="fas fa-shopping-cart"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKOUT MODAL -->
+  <div id="checkoutModal" class="material-modal">
+    <div class="modal-content" style="max-width: 800px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Checkout</h3>
+        <button onclick="closeCheckoutModal()" class="modal-close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Cart Summary -->
+        <div
+          style="background: var(--bg-secondary); padding: 1.5rem; border-radius: var(--border-radius); margin-bottom: 2rem;">
+          <h4 style="font-weight: 600; font-size: 1.1rem; margin-bottom: 1rem; color: var(--text-primary);">Order
+            Summary</h4>
+          <div id="checkoutCartItems"></div>
+          <div style="height: 1px; background: var(--bg-primary); margin: 1rem 0;"></div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 600; font-size: 1.1rem; color: var(--text-primary);">Total:</span>
+            <span id="checkoutTotal" style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">₵0</span>
+          </div>
+        </div>
+
+        <!-- Checkout Form -->
+        <form id="checkoutForm" style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <div>
+            <label class="material-label">Full Name *</label>
+            <input type="text" id="customerName" placeholder="Enter your full name" class="material-input" required />
+          </div>
+
+          <div>
+            <label class="material-label">Email Address *</label>
+            <input type="email" id="customerEmail" placeholder="Enter your email" class="material-input" required />
+          </div>
+
+          <div>
+            <label class="material-label">Phone Number *</label>
+            <input type="tel" id="customerPhone" placeholder="Enter your phone number" class="material-input"
+              required />
+          </div>
+
+          <div>
+            <label class="material-label">Region *</label>
+            <select id="customerRegion" class="material-select" required>
+              <option value="">Select Region</option>
+              <option>Ashanti</option>
+              <option>Greater Accra</option>
+              <option>Volta</option>
+              <option>Eastern</option>
+              <option>Central</option>
+              <option>Western</option>
+              <option>Northern</option>
+              <option>Upper East</option>
+              <option>Upper West</option>
+              <option>Ahafo</option>
+              <option>Bono</option>
+              <option>Bono East</option>
+              <option>Oti</option>
+              <option>Savannah</option>
+              <option>North East</option>
+              <option>Western North</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="material-label">Town *</label>
+            <input type="text" id="customerTown" placeholder="Enter your town" class="material-input" required />
+          </div>
+
+          <div>
+            <label class="material-label">Address *</label>
+            <textarea id="customerAddress" placeholder="Enter your full address" class="material-textarea"
+              required></textarea>
+          </div>
+
+          <div>
+            <label class="material-label">Country</label>
+            <input type="text" id="customerCountry" value="Ghana" class="material-input" readonly
+              style="background: var(--bg-secondary);" />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" form="checkoutForm" class="material-btn material-btn-primary">
+          <i class="fas fa-check"></i> Place Order
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="material-footer">
+    <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">© 2025 Edven
+      Import Hub • All rights reserved</p>
+    <p style="font-size: 0.9rem;">Premium imports | Global delivery | Best prices</p>
+  </footer>
+
+  <script src="js/firebase.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/theme.js"></script>
+  <script>
+    AOS.init({
+      once: true,
+      duration: 800,
+      easing: 'ease-out-cubic'
+    });
+
+    if (window.innerWidth < 768) {
+      document.querySelectorAll('.hide-mobile').forEach(el => el.style.display = 'none');
+    }
+
+    // Toggle cart dropdown
+    function toggleCart() {
+      const cartMenu = document.getElementById('cartMenu');
+      if (cartMenu) {
+        cartMenu.classList.toggle('active');
+      }
+    }
+
+    // Close cart when clicking outside
+    document.addEventListener('click', (e) => {
+      const cartDropdown = document.querySelector('.cart-dropdown');
+      const cartMenu = document.getElementById('cartMenu');
+      if (cartMenu && cartMenu.classList.contains('active') && !cartDropdown.contains(e.target)) {
+        cartMenu.classList.remove('active');
+      }
+    });
+
+    window.toggleCart = toggleCart;
+  </script>
+</body>
+
+</html>

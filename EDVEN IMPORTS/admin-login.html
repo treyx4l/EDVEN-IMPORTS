@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+  <title>Admin Login | Edven</title>
+
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- AOS Animation -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- Material Design Styles -->
+  <link rel="stylesheet" href="css/material-styles.css" />
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="js/firebase.js"></script>
+</head>
+
+<body style="min-height: 100vh; overflow: hidden;">
+  <div class="animated-bg"></div>
+
+  <div
+    style="position: relative; z-index: 1; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <!-- Theme Toggle -->
+    <button onclick="toggleTheme()" class="material-btn material-btn-icon"
+      style="position: absolute; top: 20px; right: 20px; z-index: 10;">
+      <i class="fas fa-moon"></i>
+    </button>
+
+    <div style="width: 100%; max-width: 450px;" data-aos="zoom-in">
+      <!-- Login Card -->
+      <div class="material-card material-card-elevated" data-aos="fade-up" data-aos-delay="100">
+        <div style="padding: 2.5rem;">
+          <div style="text-align: center; margin-bottom: 2rem;">
+            <h2 style="font-size: 2rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">Welcome Back
+            </h2>
+            <p style="color: var(--text-secondary);">Sign in to access the admin dashboard</p>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div data-aos="fade-up" data-aos-delay="150">
+              <label class="material-label">
+                <i class="fas fa-envelope" style="margin-right: 8px; color: var(--primary);"></i>Email Address
+              </label>
+              <input id="email" type="email" placeholder="admin@edven.com" class="material-input" />
+            </div>
+
+            <div data-aos="fade-up" data-aos-delay="200">
+              <label class="material-label">
+                <i class="fas fa-lock" style="margin-right: 8px; color: var(--primary);"></i>Password
+              </label>
+              <input id="password" type="password" placeholder="Enter your password" class="material-input" />
+            </div>
+
+            <button onclick="login()" class="material-btn material-btn-primary"
+              style="width: 100%; padding: 14px; margin-top: 0.5rem;" data-aos="fade-up" data-aos-delay="250">
+              <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 1rem; margin: 2rem 0;">
+            <div style="flex: 1; height: 1px; background: var(--bg-secondary);"></div>
+            <span style="color: var(--text-secondary); font-size: 14px;">OR</span>
+            <div style="flex: 1; height: 1px; background: var(--bg-secondary);"></div>
+          </div>
+
+          <a href="index.html" class="material-btn material-btn-outlined" style="width: 100%; padding: 14px;">
+            <i class="fas fa-arrow-left"></i> Back to Main Page
+          </a>
+
+          <div style="text-align: center; margin-top: 2rem; color: var(--text-secondary); font-size: 0.875rem;"
+            data-aos="fade-up" data-aos-delay="300">
+            <p><i class="fas fa-info-circle" style="margin-right: 4px;"></i> Admin access only • Contact support for
+              credentials</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div style="text-align: center; margin-top: 2rem; color: var(--text-secondary); font-size: 0.875rem;"
+        data-aos="fade-up" data-aos-delay="350">
+        <p>© 2025 Edven Import Hub • All rights reserved</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/theme.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    AOS.init({
+      once: true,
+      duration: 800,
+      easing: 'ease-out-cubic'
+    });
+  </script>
+</body>
+
+</html>

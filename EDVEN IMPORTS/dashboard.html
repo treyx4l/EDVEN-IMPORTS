@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+  <title>Dashboard | Edven</title>
+  
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <!-- AOS Animation -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  
+  <!-- Material Design Styles -->
+  <link rel="stylesheet" href="css/material-styles.css" />
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="js/firebase.js"></script>
+</head>
+
+<body>
+  <div class="animated-bg"></div>
+  
+  <!-- NAVBAR -->
+  <nav class="material-navbar">
+    <div class="navbar-container">
+      <a href="dashboard.html" class="logo-container">
+        <div class="logo-icon">ED</div>
+        <span class="logo-text">Admin Dashboard</span>
+      </a>
+      <div class="nav-actions">
+        <a href="dashboard.html" class="material-btn material-btn-primary">
+          <i class="fas fa-box"></i>
+          <span class="hide-mobile">Products</span>
+        </a>
+        <a href="orders.html" class="material-btn material-btn-text">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="hide-mobile">Orders</span>
+        </a>
+        <button onclick="toggleTheme()" class="material-btn material-btn-icon">
+          <i class="fas fa-moon"></i>
+        </button>
+        <button onclick="logout()" class="material-btn material-btn-text" style="color: #f44336;">
+          <i class="fas fa-sign-out-alt"></i>
+          <span class="hide-mobile">Logout</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="material-hero" style="min-height: 50vh; padding: 100px 20px 60px;">
+    <div class="hero-content">
+      <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem;" data-aos="fade-right">
+        <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <i class="fas fa-box-open" style="font-size: 36px; color: white;"></i>
+        </div>
+        <div>
+          <h1 class="hero-title" style="font-size: clamp(2rem, 4vw, 3.5rem); margin-bottom: 0.5rem;">Product Management</h1>
+          <p class="hero-subtitle" style="font-size: 1.1rem;">Add and manage your product inventory</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT -->
+  <section class="material-section">
+    <!-- ADD PRODUCT CARD -->
+    <div class="material-card material-card-elevated" style="margin-bottom: 3rem;" data-aos="fade-up">
+      <div style="padding: 2.5rem;">
+        <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem;">
+          <div style="width: 64px; height: 64px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-lg);">
+            <i class="fas fa-plus" style="font-size: 28px; color: white;"></i>
+          </div>
+          <div>
+            <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-primary);">Add New Product</h2>
+            <p style="color: var(--text-secondary);">Fill in the details below to add a new product to your store</p>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+          <div data-aos="fade-up" data-aos-delay="100">
+            <label class="material-label">Product Name</label>
+            <input id="pname" type="text" placeholder="Enter product name" class="material-input" />
+          </div>
+          <div data-aos="fade-up" data-aos-delay="150">
+            <label class="material-label">Price</label>
+            <input id="pprice" type="number" placeholder="Enter price" class="material-input" />
+          </div>
+          <div data-aos="fade-up" data-aos-delay="200">
+            <label class="material-label">Image URL</label>
+            <input id="pimage" type="url" placeholder="Enter image URL" class="material-input" />
+          </div>
+          <div data-aos="fade-up" data-aos-delay="250">
+            <label class="material-label">Category</label>
+            <select id="pcategory" class="material-select">
+              <option>Home Appliances</option>
+              <option>Electrical Gadgets</option>
+              <option>Bags</option>
+              <option>Ladies Wear</option>
+              <option>Heels</option>
+              <option>Easy Wear</option>
+              <option>Wigs</option>
+            </select>
+          </div>
+        </div>
+
+        <div data-aos="fade-up" data-aos-delay="300" style="margin-bottom: 1.5rem;">
+          <label class="material-label">Product Description</label>
+          <textarea id="pdescription" placeholder="Enter product description (e.g., features, specifications, etc.)" class="material-textarea"></textarea>
+        </div>
+
+        <div id="addProductSection">
+          <button onclick="addProduct()" class="material-btn material-btn-primary" style="width: 100%; padding: 14px;" data-aos="fade-up" data-aos-delay="350">
+            <i class="fas fa-plus-circle"></i> Add Product
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW PRODUCTS BUTTON -->
+    <div style="text-align: center; margin-bottom: 2rem;" data-aos="fade-up" data-aos-delay="400">
+      <button onclick="openProductsModal()" class="material-btn material-btn-outlined" style="padding: 14px 32px; font-size: 16px;">
+        <i class="fas fa-list"></i> View All Products (<span id="productCount">0</span>)
+      </button>
+    </div>
+  </section>
+
+  <!-- PRODUCTS MODAL -->
+  <div id="productsModal" class="material-modal">
+    <div class="modal-content" style="max-width: 1200px; max-height: 90vh;">
+      <div class="modal-header">
+        <h3 class="modal-title">All Products (<span id="modalProductCount">0</span>)</h3>
+        <button onclick="closeProductsModal()" class="modal-close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body" style="max-height: calc(90vh - 140px); overflow-y: auto;">
+        <div id="productsList" class="products-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT PRODUCT MODAL -->
+  <div id="editProductModal" class="material-modal">
+    <div class="modal-content" style="max-width: 800px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Product</h3>
+        <button onclick="closeEditModal()" class="modal-close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+          <div>
+            <label class="material-label">Product Name</label>
+            <input id="editPname" type="text" class="material-input" />
+          </div>
+          <div>
+            <label class="material-label">Price</label>
+            <input id="editPprice" type="number" class="material-input" />
+          </div>
+          <div>
+            <label class="material-label">Image URL</label>
+            <input id="editPimage" type="url" class="material-input" />
+          </div>
+          <div>
+            <label class="material-label">Category</label>
+            <select id="editPcategory" class="material-select">
+              <option>Home Appliances</option>
+              <option>Electrical Gadgets</option>
+              <option>Bags</option>
+              <option>Ladies Wear</option>
+              <option>Heels</option>
+              <option>Easy Wear</option>
+              <option>Wigs</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+          <label class="material-label">Product Description</label>
+          <textarea id="editPdescription" class="material-textarea"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeEditModal()" class="material-btn material-btn-text">Cancel</button>
+        <button onclick="saveProductEdit()" class="material-btn material-btn-primary">
+          <i class="fas fa-save"></i> Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="material-footer">
+    <p>© 2025 Edven Import Hub • Admin Dashboard</p>
+  </footer>
+
+  <script src="js/admin.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/theme.js"></script>
+  <script>
+    AOS.init({ 
+      once: true,
+      duration: 800,
+      easing: 'ease-out-cubic'
+    });
+    
+    if (window.innerWidth < 768) {
+      document.querySelectorAll('.hide-mobile').forEach(el => el.style.display = 'none');
+    }
+  </script>
+</body>
+</html>
